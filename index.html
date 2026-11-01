@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jas - Prabh Marriage Expense Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: #f1f4f7; --surface: #ffffff; --ink: #14202b; --muted: #5b6977; --line: #d8e0e7;
+  --accent: #b3262e; --accent-ink: #ffffff; --ok: #1b7a4b; --bar: #cdd7e0;
+  --font-display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0f161c; --surface: #17212a; --ink: #e8eef3; --muted: #94a2ae; --line: #2a3641;
+    --accent: #f0646c; --accent-ink: #1b0709; --ok: #5fcf9b; --bar: #2d3b47; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.45;
+  padding: 20px max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px)); }
+main { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+h1, h2 { font-family: var(--font-display); margin: 0; text-wrap: balance; }
+h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.sub { margin: 4px 0 0; color: var(--muted); }
+section { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.grand { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.grand .big { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 32px; font-weight: 600; }
+.grand .small { color: var(--muted); font-size: 13px; }
+.people { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.person { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; }
+.person .who { font-weight: 600; overflow-wrap: anywhere; }
+.person .amt { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-weight: 600; }
+.person .meter { grid-column: 1 / -1; height: 6px; background: var(--bar); border-radius: 3px; overflow: hidden; }
+.person .meter i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+.person .count { grid-column: 1 / -1; color: var(--muted); font-size: 12px; }
+form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field.wide { grid-column: 1 / -1; }
+label { font-size: 13px; font-weight: 600; color: var(--muted); }
+input { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; width: 100%; min-width: 0; }
+input:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.money { position: relative; }
+.money span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-family: var(--font-num); font-size: 13px; }
+.money input { padding-left: 52px; font-family: var(--font-num); }
+.actions { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; }
+button { font: inherit; font-weight: 600; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 10px 16px; cursor: pointer; }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button.small { padding: 4px 10px; font-size: 13px; }
+button.danger { color: var(--accent); }
+button:disabled { opacity: 0.55; cursor: default; }
+.note { color: var(--muted); font-size: 13px; margin: 0; }
+.status { margin: 0; font-size: 13px; color: var(--accent); min-height: 1em; grid-column: 1 / -1; }
+.ledger { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.entry { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.entry:first-child { border-top: 0; padding-top: 0; }
+.entry .detail { font-weight: 600; overflow-wrap: anywhere; min-width: 0; }
+.entry .amt { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
+.entry .meta { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; color: var(--muted); font-size: 12px; }
+.chip { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); }
+.chip.open { color: var(--ok); border-color: var(--ok); }
+.empty { color: var(--muted); margin: 0; padding: 8px 0; }
+.owner { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.owner form { grid-template-columns: 1fr; width: 100%; max-width: 320px; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--muted); font-size: 13px; font-weight: 500; text-decoration: underline; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Jas - Prabh Marriage Expense Tracker</h1>
+    <p class="sub">Add what you paid. Everything is in Canadian dollars (CAD).</p>
+  </header>
+
+  <section aria-labelledby="t-h">
+    <h2 id="t-h">Who paid how much</h2>
+    <div class="grand"><span class="big" id="grand">$0.00</span><span class="small" id="grandMeta">CAD total</span></div>
+    <ul class="people" id="people"></ul>
+    <p class="empty" id="peopleEmpty">No expenses yet. The first one you add will start the tab.</p>
+  </section>
+
+  <section aria-labelledby="f-h">
+    <h2 id="f-h">Add an expense</h2>
+    <form id="form" autocomplete="off">
+      <div class="field wide"><label for="name">Your name</label><input id="name" maxlength="40" required placeholder="e.g. Priya"></div>
+      <div class="field"><label for="detail">What was it for</label><input id="detail" maxlength="80" required placeholder="Decor, catering, gas"></div>
+      <div class="field"><label for="amount">Cost</label><div class="money"><span>CAD $</span><input id="amount" type="number" inputmode="decimal" min="0.01" max="1000000" step="0.01" required placeholder="0.00"></div></div>
+      <div class="actions">
+        <button class="primary" id="submit" type="submit" disabled>Add expense</button>
+        <button type="button" id="cancel" hidden>Cancel edit</button>
+      </div>
+      <p class="status" id="status" role="status"></p>
+    </form>
+    <p class="note">You can edit or delete your own entry for 24 hours after adding it, from the same phone or browser. After that it is locked.</p>
+  </section>
+
+  <section aria-labelledby="h-h">
+    <h2 id="h-h">History</h2>
+    <ul class="ledger" id="ledger"></ul>
+    <p class="empty" id="ledgerEmpty">Entries will show up here with the date and time they were added.</p>
+  </section>
+
+  <section aria-labelledby="l-h" id="logSection" hidden>
+    <h2 id="l-h">Activity log (owner only)</h2>
+    <ul class="ledger" id="logList"></ul>
+    <p class="empty" id="logEmpty">Every add, edit and delete will be recorded here with who did it and when.</p>
+  </section>
+
+  <div class="owner">
+    <button class="linkbtn" id="ownerToggle" type="button">Owner sign in</button>
+    <form id="ownerForm" hidden>
+      <div class="field"><label for="oemail">Owner email</label><input id="oemail" type="email" autocomplete="username"></div>
+      <div class="field"><label for="opass">Password</label><input id="opass" type="password" autocomplete="current-password"></div>
+      <div class="actions"><button class="primary" type="submit">Sign in</button></div>
+      <p class="status" id="ownerStatus" role="status"></p>
+    </form>
+    <button class="linkbtn" id="ownerOut" type="button" hidden>Sign out of owner view</button>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+/* ============ STEP 5: paste your Supabase values here ============ */
+const SUPABASE_URL = "https://qtwfjtsplcoefaozdlqj.supabase.co/rest/v1/";
+const SUPABASE_ANON_KEY = "sb_publishable__VFeYLHs_vRXTyNo5QKsgw_jX1y7j7L";
+/* ================================================================== */
+
+const DAY = 24 * 60 * 60 * 1000;
+const cad = new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" });
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; };
+const fmtTime = (ms, extra) => new Date(ms).toLocaleString("en-CA", Object.assign({ month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }, extra || {}));
+const setStatus = (t) => { $("status").textContent = t || ""; };
+
+if (SUPABASE_URL.indexOf("PASTE") === 0) {
+  setStatus("Setup needed: paste your Supabase values into index.html.");
+  throw new Error("Supabase config missing");
+}
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let me = null, isOwner = false, docs = [], logs = [], editingId = null, channel = null;
+try { $("name").value = localStorage.getItem("tab.name") || ""; } catch (e) {}
+
+const locked = (e) => Date.now() - e.ts >= DAY;
+function leftLabel(e) {
+  const ms = DAY - (Date.now() - e.ts); if (ms <= 0) return "Locked";
+  return "Editable " + Math.floor(ms / 3600000) + "h " + Math.floor((ms % 3600000) / 60000) + "m";
+}
+
+function render() {
+  let total = 0; const by = {};
+  docs.forEach((e) => {
+    total += e.cents;
+    const k = e.name.trim().toLowerCase();
+    by[k] = by[k] || { name: e.name.trim(), cents: 0, n: 0 };
+    by[k].cents += e.cents; by[k].n++;
+  });
+  $("grand").textContent = cad.format(total / 100);
+  $("grandMeta").textContent = "CAD total, " + docs.length + (docs.length === 1 ? " expense" : " expenses");
+  const pl = $("people"); pl.textContent = "";
+  Object.keys(by).sort((a, b) => by[b].cents - by[a].cents).forEach((k) => {
+    const p = by[k], li = el("li", "person");
+    li.appendChild(el("span", "who", p.name));
+    li.appendChild(el("span", "amt", cad.format(p.cents / 100)));
+    const meter = el("div", "meter"), bar = el("i"); bar.style.width = (total ? Math.max(2, p.cents / total * 100) : 0) + "%";
+    meter.appendChild(bar); li.appendChild(meter);
+    li.appendChild(el("span", "count", p.n + (p.n === 1 ? " expense" : " expenses")));
+    pl.appendChild(li);
+  });
+  $("peopleEmpty").hidden = docs.length > 0;
+
+  const lg = $("ledger"); lg.textContent = "";
+  docs.forEach((e) => {
+    const li = el("li", "entry"), mine = me && e.uid === me.id, lk = locked(e);
+    li.appendChild(el("span", "detail", e.detail));
+    li.appendChild(el("span", "amt", cad.format(e.cents / 100)));
+    const meta = el("div", "meta");
+    meta.appendChild(el("span", "", e.name + (mine ? " (you)" : "")));
+    meta.appendChild(el("span", "", fmtTime(e.ts)));
+    meta.appendChild(el("span", "chip" + (lk ? "" : " open"), leftLabel(e)));
+    if (mine && !lk) {
+      const ed = el("button", "small", "Edit"); ed.type = "button"; ed.onclick = () => startEdit(e.id);
+      const del = el("button", "small danger", "Delete"); del.type = "button"; del.onclick = () => removeEntry(e.id);
+      meta.appendChild(ed); meta.appendChild(del);
+    }
+    li.appendChild(meta); lg.appendChild(li);
+  });
+  $("ledgerEmpty").hidden = docs.length > 0;
+  $("submit").disabled = !me;
+
+  $("logSection").hidden = !isOwner;
+  $("ownerOut").hidden = !isOwner;
+  $("ownerToggle").hidden = isOwner;
+  if (isOwner) {
+    const ul = $("logList"); ul.textContent = "";
+    logs.forEach((l) => {
+      const li = el("li", "entry");
+      li.appendChild(el("span", "detail", l.name + " " + l.action + " “" + l.detail + "”"));
+      li.appendChild(el("span", "amt", cad.format(l.cents / 100)));
+      const meta = el("div", "meta");
+      meta.appendChild(el("span", "", fmtTime(l.at, { year: "numeric", second: "2-digit" })));
+      meta.appendChild(el("span", "chip" + (l.action === "added" ? " open" : ""), l.action));
+      if (l.action === "edited" && l.before_detail) meta.appendChild(el("span", "", "was “" + l.before_detail + "” " + cad.format(l.before_cents / 100)));
+      li.appendChild(meta); ul.appendChild(li);
+    });
+    $("logEmpty").hidden = logs.length > 0;
+  }
+}
+
+async function load() {
+  const r = await sb.from("expenses").select("id,user_id,name,detail,cents,created_at").order("created_at", { ascending: false }).limit(1000);
+  if (r.error) { setStatus("Could not load the tab. Check your connection."); return; }
+  docs = r.data.map((x) => ({ id: x.id, uid: x.user_id, name: x.name, detail: x.detail, cents: x.cents, ts: Date.parse(x.created_at) }));
+  if (isOwner) {
+    const l = await sb.from("logs").select("name,action,detail,cents,before_detail,before_cents,at").order("at", { ascending: false }).limit(300);
+    logs = l.error ? [] : l.data.map((x) => Object.assign({}, x, { at: Date.parse(x.at) }));
+  } else { logs = []; }
+  render();
+}
+
+function ensureChannel() {
+  if (channel) return;
+  channel = sb.channel("tab-changes").on("postgres_changes", { event: "*", schema: "public", table: "expenses" }, () => load()).subscribe();
+}
+
+sb.auth.onAuthStateChange((event, session) => {
+  setTimeout(() => {
+    if (!session) {
+      sb.auth.signInAnonymously().then((r) => { if (r.error) setStatus("Could not connect. Turn on anonymous sign-ins in Supabase."); });
+      return;
+    }
+    me = session.user; isOwner = !me.is_anonymous && !!me.email;
+    load(); ensureChannel(); render();
+  }, 0);
+});
+
+function startEdit(id) {
+  const e = docs.find((x) => x.id === id);
+  if (!e || locked(e)) { setStatus("That entry is locked."); return; }
+  editingId = id; $("detail").value = e.detail; $("amount").value = (e.cents / 100).toFixed(2); $("name").value = e.name;
+  $("submit").textContent = "Save changes"; $("cancel").hidden = false; $("detail").focus(); setStatus("");
+}
+function resetForm() { editingId = null; $("detail").value = ""; $("amount").value = ""; $("submit").textContent = "Add expense"; $("cancel").hidden = true; }
+const failMsg = "Could not save. Check your connection and try again.";
+const lockMsg = "That entry is locked or is not yours to change.";
+
+async function removeEntry(id) {
+  const r = await sb.from("expenses").delete().eq("id", id).select();
+  if (r.error) { setStatus(failMsg); return; }
+  if (!r.data.length) { setStatus(lockMsg); load(); return; }
+  if (editingId === id) resetForm();
+  setStatus(""); load();
+}
+
+$("cancel").onclick = () => { resetForm(); setStatus(""); };
+$("form").addEventListener("submit", async (ev) => {
+  ev.preventDefault(); if (!me) return;
+  const name = $("name").value.trim(), detail = $("detail").value.trim(), amt = parseFloat($("amount").value);
+  if (!name || !detail || !(amt > 0)) { setStatus("Enter your name, what it was for, and a cost above $0.00."); return; }
+  const cents = Math.round(amt * 100);
+  try { localStorage.setItem("tab.name", name); } catch (e) {}
+  $("submit").disabled = true;
+  let r;
+  if (editingId) {
+    r = await sb.from("expenses").update({ name: name, detail: detail, cents: cents }).eq("id", editingId).select();
+    if (!r.error && !r.data.length) r = { error: { message: "locked" }, locked: true };
+  } else {
+    r = await sb.from("expenses").insert({ name: name, detail: detail, cents: cents });
+  }
+  if (r.error) { setStatus(r.locked ? lockMsg : failMsg); } else { resetForm(); setStatus(""); }
+  await load();
+});
+
+$("ownerToggle").onclick = () => { $("ownerForm").hidden = !$("ownerForm").hidden; };
+$("ownerForm").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  $("ownerStatus").textContent = "";
+  const r = await sb.auth.signInWithPassword({ email: $("oemail").value.trim(), password: $("opass").value });
+  if (r.error) { $("ownerStatus").textContent = "Email or password is not right."; return; }
+  $("ownerForm").hidden = true; $("opass").value = "";
+});
+$("ownerOut").onclick = () => { sb.auth.signOut(); };
+setInterval(load, 30000);
+setInterval(render, 60000);
+</script>
+</body>
+</html>
