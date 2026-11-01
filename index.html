@@ -232,7 +232,7 @@ function ensureChannel() {
 sb.auth.onAuthStateChange((event, session) => {
   setTimeout(() => {
     if (!session) {
-      sb.auth.signInAnonymously().then((r) => { if (r.error) setStatus("Could not connect. Turn on anonymous sign-ins in Supabase."); });
+      sb.auth.signInAnonymously().then((r) => { if (r.error) setStatus("Could not connect: " + r.error.message); });
       return;
     }
     me = session.user; isOwner = !me.is_anonymous && !!me.email;
