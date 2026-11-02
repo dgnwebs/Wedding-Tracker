@@ -202,7 +202,7 @@ try { const s = localStorage.getItem("tab.side"); if (s === "bride") $("sideBrid
 const locked = (e) => Date.now() - e.ts >= DAY;
 function leftLabel(e) {
   const ms = DAY - (Date.now() - e.ts); if (ms <= 0) return "Locked";
-  return "Editable " + Math.floor(ms / 3600000) + "h " + Math.floor((ms % 3600000) / 60000) + "m";
+  /* return "Editable " + Math.floor(ms / 3600000) + "h " + Math.floor((ms % 3600000) / 60000) + "m"; */
 }
 
 function cell(e) {
