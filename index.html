@@ -281,7 +281,7 @@ function render() {
 
 async function load() {
   const r = await sb.from("expenses").select("id,user_id,name,detail,cents,created_at").order("created_at", { ascending: false }).limit(1000);
-  if (r.error) { setStatus("Could not load the tab. Check your connection."); return; }
+  if (r.error) { setStatus("Could not load the tab: " + r.error.message); return; }
   docs = r.data.map((x) => ({ id: x.id, uid: x.user_id, name: x.name, detail: x.detail, cents: x.cents, ts: Date.parse(x.created_at) }));
   if (isOwner) {
     const l = await sb.from("logs").select("name,action,detail,cents,before_detail,before_cents,at").order("at", { ascending: false }).limit(300);
