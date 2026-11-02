@@ -6,69 +6,104 @@
 <title>Jas - Prabh Marriage Expense Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 :root {
   color-scheme: light dark;
   --bg: #f1f4f7; --surface: #ffffff; --ink: #14202b; --muted: #5b6977; --line: #d8e0e7;
-  --accent: #b3262e; --accent-ink: #ffffff; --ok: #1b7a4b; --bar: #cdd7e0;
+  --bride: #b3262e; --bride-soft: #f9e4e5;
+  --groom: #1d5f8f; --groom-soft: #e0eef8;
+  --ok: #1b7a4b; --err: #b3262e;
   --font-display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
   --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-num: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root { --bg: #0f161c; --surface: #17212a; --ink: #e8eef3; --muted: #94a2ae; --line: #2a3641;
-    --accent: #f0646c; --accent-ink: #1b0709; --ok: #5fcf9b; --bar: #2d3b47; }
+    --bride: #f0828a; --bride-soft: #3a2024; --groom: #6bb4ea; --groom-soft: #1b2d3c; --ok: #5fcf9b; --err: #f0828a; }
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.45;
-  padding: 20px max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px)); }
-main { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.45;
+  padding: 24px max(16px, env(safe-area-inset-right, 0px)) 56px max(16px, env(safe-area-inset-left, 0px)); }
+main { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
 h1, h2 { font-family: var(--font-display); margin: 0; text-wrap: balance; }
 h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; }
 h2 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
 .sub { margin: 4px 0 0; color: var(--muted); }
-section { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-.grand { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.grand .big { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 32px; font-weight: 600; }
-.grand .small { color: var(--muted); font-size: 13px; }
-.people { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
-.person { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; }
-.person .who { font-weight: 600; overflow-wrap: anywhere; }
-.person .amt { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-weight: 600; }
-.person .meter { grid-column: 1 / -1; height: 6px; background: var(--bar); border-radius: 3px; overflow: hidden; }
-.person .meter i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
-.person .count { grid-column: 1 / -1; color: var(--muted); font-size: 12px; }
-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.field.wide { grid-column: 1 / -1; }
-label { font-size: 13px; font-weight: 600; color: var(--muted); }
-input { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; width: 100%; min-width: 0; }
-input:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.money { position: relative; }
-.money span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-family: var(--font-num); font-size: 13px; }
-.money input { padding-left: 52px; font-family: var(--font-num); }
-.actions { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; }
-button { font: inherit; font-weight: 600; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 10px 16px; cursor: pointer; }
-button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-button.small { padding: 4px 10px; font-size: 13px; }
-button.danger { color: var(--accent); }
-button:disabled { opacity: 0.55; cursor: default; }
-.note { color: var(--muted); font-size: 13px; margin: 0; }
-.status { margin: 0; font-size: 13px; color: var(--accent); min-height: 1em; grid-column: 1 / -1; }
-.ledger { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
-.entry { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 12px 0; border-top: 1px solid var(--line); }
-.entry:first-child { border-top: 0; padding-top: 0; }
-.entry .detail { font-weight: 600; overflow-wrap: anywhere; min-width: 0; }
-.entry .amt { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
-.entry .meta { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; color: var(--muted); font-size: 12px; }
-.chip { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); }
-.chip.open { color: var(--ok); border-color: var(--ok); }
-.empty { color: var(--muted); margin: 0; padding: 8px 0; }
-.owner { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
-.owner form { grid-template-columns: 1fr; width: 100%; max-width: 320px; }
-.linkbtn { background: none; border: 0; padding: 0; color: var(--muted); font-size: 13px; font-weight: 500; text-decoration: underline; }
+section { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
 [hidden] { display: none !important; }
+
+/* Add expense */
+.add { padding: 22px; border-width: 2px; border-color: var(--ink); }
+.add h2 { font-size: 15px; color: var(--ink); }
+.sides { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.opt { position: relative; }
+.opt input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.opt label { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 76px; padding: 12px;
+  border: 2px solid var(--line); border-radius: 12px; font-size: 18px; font-weight: 700; text-align: center; color: var(--muted); }
+.opt label small { font-size: 14px; font-weight: 600; }
+.opt input:checked + label.bride { border-color: var(--bride); background: var(--bride-soft); color: var(--bride); }
+.opt input:checked + label.groom { border-color: var(--groom); background: var(--groom-soft); color: var(--groom); }
+.opt input:focus-visible + label { outline: 3px solid var(--ink); outline-offset: 2px; }
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+label.cap { font-size: 14px; font-weight: 700; }
+input[type=text], input[type=number], input[type=email], input[type=password] {
+  font: inherit; font-size: 18px; color: var(--ink); background: var(--bg); border: 2px solid var(--line); border-radius: 10px; padding: 14px; width: 100%; min-width: 0; }
+input:focus-visible, button:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.money { position: relative; }
+.money span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-family: var(--font-num); font-size: 15px; }
+.money input { padding-left: 66px; font-family: var(--font-num); font-size: 22px; font-weight: 600; }
+button { font: inherit; font-weight: 700; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 12px 18px; cursor: pointer; }
+button.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); font-size: 18px; padding: 16px 22px; width: 100%; }
+button.small { padding: 4px 10px; font-size: 13px; font-weight: 600; }
+button.danger { color: var(--err); }
+button:disabled { opacity: 0.5; cursor: default; }
+.status { margin: 0; font-size: 14px; color: var(--err); min-height: 1.2em; }
+.note { color: var(--muted); font-size: 13px; margin: 0; }
+
+/* Two-column table */
+.tablewrap { margin: 0 -6px; }
+table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+th { text-align: left; padding: 12px 10px; font-family: var(--font-display); font-size: 17px; font-weight: 800; line-height: 1.2; }
+th small { display: block; font-size: 13px; font-weight: 600; opacity: 0.85; }
+th.bride { background: var(--bride-soft); color: var(--bride); border-top-left-radius: 10px; }
+th.groom { background: var(--groom-soft); color: var(--groom); border-top-right-radius: 10px; }
+td { vertical-align: top; padding: 10px; border-top: 1px solid var(--line); min-width: 0; }
+td + td, th + th { border-left: 1px solid var(--line); }
+.cell { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cell .top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.cell .detail { font-weight: 600; overflow-wrap: anywhere; min-width: 0; }
+.cell .amt { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-weight: 600; }
+.cell .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; color: var(--muted); font-size: 12px; }
+.chip { font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--line); }
+.chip.open { color: var(--ok); border-color: var(--ok); }
+tfoot td { border-top: 2px solid var(--ink); padding: 14px 10px; }
+tfoot .lbl { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+tfoot .tot { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 24px; font-weight: 600; overflow-wrap: anywhere; }
+tfoot td.bride .tot { color: var(--bride); }
+tfoot td.groom .tot { color: var(--groom); }
+.empty { color: var(--muted); margin: 0; padding: 6px 0; }
+
+/* Who pays whom */
+.settle { border-width: 2px; border-color: var(--ink); }
+.verdict { font-family: var(--font-display); font-size: 24px; font-weight: 800; line-height: 1.2; text-wrap: balance; }
+.verdict .pay { font-family: var(--font-num); font-variant-numeric: tabular-nums; display: block; font-size: 38px; margin-top: 6px; }
+.verdict .bride { color: var(--bride); } .verdict .groom { color: var(--groom); }
+.math { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; margin: 0; font-size: 14px; color: var(--muted); }
+.math dd { margin: 0; text-align: right; font-family: var(--font-num); font-variant-numeric: tabular-nums; color: var(--ink); }
+
+/* Owner */
+.log { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.log li { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+.log li:first-child { border-top: 0; padding-top: 0; }
+.log .what { font-weight: 600; overflow-wrap: anywhere; }
+.log .amt { font-family: var(--font-num); font-weight: 600; }
+.log .meta { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px 10px; color: var(--muted); font-size: 12px; align-items: center; }
+.owner { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.owner form { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 320px; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--muted); font-size: 13px; font-weight: 500; text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -78,46 +113,61 @@ button:disabled { opacity: 0.55; cursor: default; }
     <p class="sub">Add what you paid. Everything is in Canadian dollars (CAD).</p>
   </header>
 
-  <section aria-labelledby="t-h">
-    <h2 id="t-h">Who paid how much</h2>
-    <div class="grand"><span class="big" id="grand">$0.00</span><span class="small" id="grandMeta">CAD total</span></div>
-    <ul class="people" id="people"></ul>
-    <p class="empty" id="peopleEmpty">No expenses yet. The first one you add will start the tab.</p>
-  </section>
-
-  <section aria-labelledby="f-h">
+  <section class="add" aria-labelledby="f-h">
     <h2 id="f-h">Add an expense</h2>
-    <form id="form" autocomplete="off">
-      <div class="field wide"><label for="name">Your name</label><input id="name" maxlength="40" required placeholder="e.g. Priya"></div>
-      <div class="field"><label for="detail">What was it for</label><input id="detail" maxlength="80" required placeholder="Decor, catering, gas"></div>
-      <div class="field"><label for="amount">Cost</label><div class="money"><span>CAD $</span><input id="amount" type="number" inputmode="decimal" min="0.01" max="1000000" step="0.01" required placeholder="0.00"></div></div>
-      <div class="actions">
-        <button class="primary" id="submit" type="submit" disabled>Add expense</button>
-        <button type="button" id="cancel" hidden>Cancel edit</button>
+    <form id="form" autocomplete="off" style="display:flex;flex-direction:column;gap:16px">
+      <div class="sides" role="radiogroup" aria-label="Who paid">
+        <div class="opt"><input type="radio" name="side" id="sideBride" value="bride" required><label for="sideBride" class="bride">Bride's side<small>Prabh</small></label></div>
+        <div class="opt"><input type="radio" name="side" id="sideGroom" value="groom" required><label for="sideGroom" class="groom">Groom's side<small>Jas</small></label></div>
       </div>
+      <div class="fields">
+        <div class="field"><label class="cap" for="detail">What was it for</label><input id="detail" type="text" maxlength="80" required placeholder="Decor, catering, DJ"></div>
+        <div class="field"><label class="cap" for="amount">Cost</label><div class="money"><span>CAD $</span><input id="amount" type="number" inputmode="decimal" min="0.01" max="1000000" step="0.01" required placeholder="0.00"></div></div>
+      </div>
+      <button class="primary" id="submit" type="submit" disabled>Add expense</button>
+      <button type="button" id="cancel" hidden>Cancel edit</button>
       <p class="status" id="status" role="status"></p>
     </form>
     <p class="note">You can edit or delete your own entry for 24 hours after adding it, from the same phone or browser. After that it is locked.</p>
   </section>
 
   <section aria-labelledby="h-h">
-    <h2 id="h-h">History</h2>
-    <ul class="ledger" id="ledger"></ul>
-    <p class="empty" id="ledgerEmpty">Entries will show up here with the date and time they were added.</p>
+    <h2 id="h-h">Expenses by side</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr>
+          <th class="bride">Bride's side<small>Prabh</small></th>
+          <th class="groom">Groom's side<small>Jas</small></th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+        <tfoot><tr>
+          <td class="bride"><div class="lbl">Bride's side total</div><div class="tot" id="totBride">$0.00</div></td>
+          <td class="groom"><div class="lbl">Groom's side total</div><div class="tot" id="totGroom">$0.00</div></td>
+        </tr></tfoot>
+      </table>
+    </div>
+    <p class="empty" id="emptyMsg">No expenses yet. Pick a side above and add the first one.</p>
+  </section>
+
+  <section class="settle" aria-labelledby="s-h">
+    <h2 id="s-h">Who pays whom</h2>
+    <div class="verdict" id="verdict">Add expenses to see who pays whom.</div>
+    <dl class="math" id="math"></dl>
+    <p class="note">Costs are split 50/50 between the two sides.</p>
   </section>
 
   <section aria-labelledby="l-h" id="logSection" hidden>
     <h2 id="l-h">Activity log (owner only)</h2>
-    <ul class="ledger" id="logList"></ul>
+    <ul class="log" id="logList"></ul>
     <p class="empty" id="logEmpty">Every add, edit and delete will be recorded here with who did it and when.</p>
   </section>
 
   <div class="owner">
     <button class="linkbtn" id="ownerToggle" type="button">Owner sign in</button>
     <form id="ownerForm" hidden>
-      <div class="field"><label for="oemail">Owner email</label><input id="oemail" type="email" autocomplete="username"></div>
-      <div class="field"><label for="opass">Password</label><input id="opass" type="password" autocomplete="current-password"></div>
-      <div class="actions"><button class="primary" type="submit">Sign in</button></div>
+      <div class="field"><label class="cap" for="oemail">Owner email</label><input id="oemail" type="email" autocomplete="username"></div>
+      <div class="field"><label class="cap" for="opass">Password</label><input id="opass" type="password" autocomplete="current-password"></div>
+      <button class="primary" type="submit" style="font-size:16px;padding:12px 18px">Sign in</button>
       <p class="status" id="ownerStatus" role="status"></p>
     </form>
     <button class="linkbtn" id="ownerOut" type="button" hidden>Sign out of owner view</button>
@@ -126,17 +176,19 @@ button:disabled { opacity: 0.55; cursor: default; }
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
-/* ============ STEP 5: paste your Supabase values here ============ */
-const SUPABASE_URL = "https://qtwfjtsplcoefaozdlqj.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0d2ZqdHNwbGNvZWZhb3pkbHFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1NjQ0OTcsImV4cCI6MjEwOTE0MDQ5N30.oIiW-vUdd2IGyzO3jeODSL09b1n9Ul5x9kJnfZTv6W4";
-/* ================================================================== */
+/* ============ Paste your Supabase values here (copy them from your current index.html) ============ */
+const SUPABASE_URL = "PASTE_PROJECT_URL";
+const SUPABASE_ANON_KEY = "PASTE_ANON_PUBLIC_KEY";
+/* ======================================================================================================= */
 
+const BRIDE = "Bride's side (Prabh)", GROOM = "Groom's side (Jas)";
 const DAY = 24 * 60 * 60 * 1000;
 const cad = new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" });
 const $ = (id) => document.getElementById(id);
 const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; };
 const fmtTime = (ms, extra) => new Date(ms).toLocaleString("en-CA", Object.assign({ month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }, extra || {}));
 const setStatus = (t) => { $("status").textContent = t || ""; };
+const sideOf = (e) => /^bride/i.test(e.name) ? "bride" : /^groom/i.test(e.name) ? "groom" : null;
 
 if (SUPABASE_URL.indexOf("PASTE") === 0) {
   setStatus("Setup needed: paste your Supabase values into index.html.");
@@ -145,7 +197,7 @@ if (SUPABASE_URL.indexOf("PASTE") === 0) {
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let me = null, isOwner = false, docs = [], logs = [], editingId = null, channel = null;
-try { $("name").value = localStorage.getItem("tab.name") || ""; } catch (e) {}
+try { const s = localStorage.getItem("tab.side"); if (s === "bride") $("sideBride").checked = true; if (s === "groom") $("sideGroom").checked = true; } catch (e) {}
 
 const locked = (e) => Date.now() - e.ts >= DAY;
 function leftLabel(e) {
@@ -153,45 +205,59 @@ function leftLabel(e) {
   return "Editable " + Math.floor(ms / 3600000) + "h " + Math.floor((ms % 3600000) / 60000) + "m";
 }
 
-function render() {
-  let total = 0; const by = {};
-  docs.forEach((e) => {
-    total += e.cents;
-    const k = e.name.trim().toLowerCase();
-    by[k] = by[k] || { name: e.name.trim(), cents: 0, n: 0 };
-    by[k].cents += e.cents; by[k].n++;
-  });
-  $("grand").textContent = cad.format(total / 100);
-  $("grandMeta").textContent = "CAD total, " + docs.length + (docs.length === 1 ? " expense" : " expenses");
-  const pl = $("people"); pl.textContent = "";
-  Object.keys(by).sort((a, b) => by[b].cents - by[a].cents).forEach((k) => {
-    const p = by[k], li = el("li", "person");
-    li.appendChild(el("span", "who", p.name));
-    li.appendChild(el("span", "amt", cad.format(p.cents / 100)));
-    const meter = el("div", "meter"), bar = el("i"); bar.style.width = (total ? Math.max(2, p.cents / total * 100) : 0) + "%";
-    meter.appendChild(bar); li.appendChild(meter);
-    li.appendChild(el("span", "count", p.n + (p.n === 1 ? " expense" : " expenses")));
-    pl.appendChild(li);
-  });
-  $("peopleEmpty").hidden = docs.length > 0;
+function cell(e) {
+  const c = el("div", "cell"), mine = me && e.uid === me.id, lk = locked(e);
+  const top = el("div", "top");
+  top.appendChild(el("span", "detail", e.detail));
+  top.appendChild(el("span", "amt", cad.format(e.cents / 100)));
+  c.appendChild(top);
+  const meta = el("div", "meta");
+  meta.appendChild(el("span", "", fmtTime(e.ts)));
+  meta.appendChild(el("span", "chip" + (lk ? "" : " open"), leftLabel(e)));
+  if (mine && !lk) {
+    const ed = el("button", "small", "Edit"); ed.type = "button"; ed.onclick = () => startEdit(e.id);
+    const del = el("button", "small danger", "Delete"); del.type = "button"; del.onclick = () => removeEntry(e.id);
+    meta.appendChild(ed); meta.appendChild(del);
+  }
+  c.appendChild(meta);
+  return c;
+}
 
-  const lg = $("ledger"); lg.textContent = "";
-  docs.forEach((e) => {
-    const li = el("li", "entry"), mine = me && e.uid === me.id, lk = locked(e);
-    li.appendChild(el("span", "detail", e.detail));
-    li.appendChild(el("span", "amt", cad.format(e.cents / 100)));
-    const meta = el("div", "meta");
-    meta.appendChild(el("span", "", e.name + (mine ? " (you)" : "")));
-    meta.appendChild(el("span", "", fmtTime(e.ts)));
-    meta.appendChild(el("span", "chip" + (lk ? "" : " open"), leftLabel(e)));
-    if (mine && !lk) {
-      const ed = el("button", "small", "Edit"); ed.type = "button"; ed.onclick = () => startEdit(e.id);
-      const del = el("button", "small danger", "Delete"); del.type = "button"; del.onclick = () => removeEntry(e.id);
-      meta.appendChild(ed); meta.appendChild(del);
-    }
-    li.appendChild(meta); lg.appendChild(li);
+function render() {
+  const bride = docs.filter((e) => sideOf(e) === "bride").sort((a, b) => a.ts - b.ts);
+  const groom = docs.filter((e) => sideOf(e) === "groom").sort((a, b) => a.ts - b.ts);
+  const bt = bride.reduce((s, e) => s + e.cents, 0), gt = groom.reduce((s, e) => s + e.cents, 0);
+
+  const body = $("rows"); body.textContent = "";
+  const n = Math.max(bride.length, groom.length);
+  for (let i = 0; i < n; i++) {
+    const tr = el("tr"), a = el("td"), b = el("td");
+    if (bride[i]) a.appendChild(cell(bride[i]));
+    if (groom[i]) b.appendChild(cell(groom[i]));
+    tr.appendChild(a); tr.appendChild(b); body.appendChild(tr);
+  }
+  $("emptyMsg").hidden = n > 0;
+  $("totBride").textContent = cad.format(bt / 100);
+  $("totGroom").textContent = cad.format(gt / 100);
+
+  // Who pays whom (50/50 split)
+  const v = $("verdict"), m = $("math"); v.textContent = ""; m.textContent = "";
+  const total = bt + gt, diff = bt - gt;
+  if (total === 0) {
+    v.textContent = "Add expenses to see who pays whom.";
+  } else if (diff === 0) {
+    v.textContent = "All square. Nobody owes anything.";
+  } else {
+    const payerBride = diff < 0, amount = Math.round(Math.abs(diff) / 2);
+    const p = el("span", payerBride ? "bride" : "groom", payerBride ? BRIDE : GROOM);
+    const q = el("span", payerBride ? "groom" : "bride", payerBride ? GROOM : BRIDE);
+    v.appendChild(p); v.appendChild(document.createTextNode(" pays ")); v.appendChild(q);
+    v.appendChild(el("span", "pay", cad.format(amount / 100)));
+  }
+  [["Bride's side paid", bt], ["Groom's side paid", gt], ["Total spent", total], ["Each side's share (50%)", Math.round(total / 2)]].forEach((r) => {
+    m.appendChild(el("dt", "", r[0])); m.appendChild(el("dd", "", cad.format(r[1] / 100)));
   });
-  $("ledgerEmpty").hidden = docs.length > 0;
+
   $("submit").disabled = !me;
 
   $("logSection").hidden = !isOwner;
@@ -200,8 +266,8 @@ function render() {
   if (isOwner) {
     const ul = $("logList"); ul.textContent = "";
     logs.forEach((l) => {
-      const li = el("li", "entry");
-      li.appendChild(el("span", "detail", l.name + " " + l.action + " “" + l.detail + "”"));
+      const li = el("li");
+      li.appendChild(el("span", "what", l.name + " " + l.action + " “" + l.detail + "”"));
       li.appendChild(el("span", "amt", cad.format(l.cents / 100)));
       const meta = el("div", "meta");
       meta.appendChild(el("span", "", fmtTime(l.at, { year: "numeric", second: "2-digit" })));
@@ -243,8 +309,10 @@ sb.auth.onAuthStateChange((event, session) => {
 function startEdit(id) {
   const e = docs.find((x) => x.id === id);
   if (!e || locked(e)) { setStatus("That entry is locked."); return; }
-  editingId = id; $("detail").value = e.detail; $("amount").value = (e.cents / 100).toFixed(2); $("name").value = e.name;
-  $("submit").textContent = "Save changes"; $("cancel").hidden = false; $("detail").focus(); setStatus("");
+  editingId = id; $("detail").value = e.detail; $("amount").value = (e.cents / 100).toFixed(2);
+  const s = sideOf(e); if (s === "bride") $("sideBride").checked = true; if (s === "groom") $("sideGroom").checked = true;
+  $("submit").textContent = "Save changes"; $("cancel").hidden = false;
+  $("f-h").scrollIntoView({ behavior: "smooth", block: "start" }); $("detail").focus(); setStatus("");
 }
 function resetForm() { editingId = null; $("detail").value = ""; $("amount").value = ""; $("submit").textContent = "Add expense"; $("cancel").hidden = true; }
 const failMsg = "Could not save. Check your connection and try again.";
@@ -261,10 +329,11 @@ async function removeEntry(id) {
 $("cancel").onclick = () => { resetForm(); setStatus(""); };
 $("form").addEventListener("submit", async (ev) => {
   ev.preventDefault(); if (!me) return;
-  const name = $("name").value.trim(), detail = $("detail").value.trim(), amt = parseFloat($("amount").value);
-  if (!name || !detail || !(amt > 0)) { setStatus("Enter your name, what it was for, and a cost above $0.00."); return; }
-  const cents = Math.round(amt * 100);
-  try { localStorage.setItem("tab.name", name); } catch (e) {}
+  const side = ($("form").elements.side.value || ""), detail = $("detail").value.trim(), amt = parseFloat($("amount").value);
+  if (!side) { setStatus("Choose Bride's side or Groom's side."); return; }
+  if (!detail || !(amt > 0)) { setStatus("Enter what it was for and a cost above $0.00."); return; }
+  const name = side === "bride" ? BRIDE : GROOM, cents = Math.round(amt * 100);
+  try { localStorage.setItem("tab.side", side); } catch (e) {}
   $("submit").disabled = true;
   let r;
   if (editingId) {
